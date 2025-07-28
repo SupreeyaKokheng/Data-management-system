@@ -18,7 +18,7 @@ interface FileUploadProps {
 export function FileUpload({ onFileProcessed }: FileUploadProps) {
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
-  const { dispatch } = useData();
+  const { state, dispatch } = useData();
   const { toast } = useToast();
 
   const processFile = useCallback(
@@ -108,8 +108,17 @@ export function FileUpload({ onFileProcessed }: FileUploadProps) {
         });
 
         localStorage.setItem(
-          "uploadedData",
-          JSON.stringify({ data: processedData, columns, fileName: file.name })
+          // "uploadedData",
+          "dataManagementState",
+          // JSON.stringify({ data: processedData, columns, fileName: file.name })
+          JSON.stringify({
+            rawData: processedData,
+            processedData: processedData,
+            columns,
+            fileName: file.name,
+            currentStep: state.currentStep,
+            validationSettings: {},
+          })
         );
 
         toast({

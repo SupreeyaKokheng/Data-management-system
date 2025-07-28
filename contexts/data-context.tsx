@@ -7,6 +7,7 @@ import {
   useReducer,
   useEffect,
   useRef,
+  useState,
 } from "react";
 
 export interface DataRow {
@@ -116,49 +117,90 @@ function dataReducer(state: DataState, action: DataAction): DataState {
 const DataContext = createContext<{
   state: DataState;
   dispatch: React.Dispatch<DataAction>;
+  isInitialized: boolean;
 } | null>(null);
 
 export function DataProvider({ children }: { children: React.ReactNode }) {
   const [state, dispatch] = useReducer(dataReducer, initialState);
   const hasInitializedRef = useRef(false);
+  const [isInitialized, setIsInitialized] = useState(false);
 
   // Save to localStorage
   useEffect(() => {
-     if (hasInitializedRef.current) {
+    if (hasInitializedRef.current) {
       localStorage.setItem("dataManagementState", JSON.stringify(state));
     }
   }, [state]);
 
-  // Load from localStorage
+  // ปรับปรุง useEffect ที่โหลดข้อมูล
   useEffect(() => {
-    // if (typeof window !== "undefined") {
-      const saved = localStorage.getItem("dataManagementState");
-      if (saved) {
-        try {
-          const parsedState = JSON.parse(saved);
-          if (parsedState.rawData.length > 0) {
+    const saved = localStorage.getItem("dataManagementState");
+    if (saved) {
+      try {
+        const parsedState = JSON.parse(saved);
+        // รับรองว่ามีข้อมูลก่อนทำการ dispatch
+        if (
+          parsedState &&
+          parsedState.rawData &&
+          parsedState.rawData.length > 0
+        ) {
+          // กำหนดค่าทั้ง state แทนที่จะใช้เฉพาะบางส่วน
+          dispatch({
+            type: "SET_RAW_DATA",
+            payload: {
+              data: parsedState.rawData,
+              columns: parsedState.columns || [],
+              fileName: parsedState.fileName || "",
+            },
+          });
+
+          if (
+            parsedState.processedData &&
+            parsedState.processedData.length > 0
+          ) {
             dispatch({
-              type: "SET_RAW_DATA",
-              payload: {
-                data: parsedState.rawData,
-                columns: parsedState.columns,
-                fileName: parsedState.fileName,
-              },
+              type: "SET_PROCESSED_DATA",
+              payload: parsedState.processedData,
             });
+          }
+
+          if (parsedState.currentStep) {
             dispatch({
               type: "SET_CURRENT_STEP",
               payload: parsedState.currentStep,
             });
           }
-        } catch (error) {
-          console.error("Error loading saved state:", error);
+        
+        // โหลด validationSettings ถ้ามี
+        if (parsedState.validationSettings) {
+          // อาจต้องเพิ่ม action สำหรับ SET_VALIDATION_SETTINGS
+          Object.entries(parsedState.validationSettings).forEach(
+            ([key, setting]) => {
+              dispatch({
+                type: "UPDATE_VALIDATION_SETTINGS",
+                payload: {
+                  key,
+                  action: (setting as any).action,
+                  value: (setting as any).value,
+                },
+              });
+            }
+          );
         }
       }
-    // }
+      } catch (error) {
+        console.error("Error loading saved state:", error);
+      }
+      hasInitializedRef.current = true;
+      setIsInitialized(true);
+    } else {
+      setIsInitialized(true); // ต้องตั้งค่าเป็น true แม้ไม่มีข้อมูล
+    }
   }, []);
 
   return (
-    <DataContext.Provider value={{ state, dispatch }}>
+    // <DataContext.Provider value={{ state, dispatch,  }}>
+    <DataContext.Provider value={{ state, dispatch, isInitialized }}>
       {children}
     </DataContext.Provider>
   );

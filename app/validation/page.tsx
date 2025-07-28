@@ -9,10 +9,10 @@ import { ValidationControls } from "@/components/validation/validation-controls"
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import { useData } from "@/contexts/data-context";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export default function ValidationPage() {
-  const { state, dispatch } = useData();
+  const { state, dispatch, isInitialized } = useData();
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState("");
   const [filterType, setFilterType] = useState("all");
@@ -27,10 +27,13 @@ export default function ValidationPage() {
     router.push("/refcode");
   };
 
+  // if (!isInitialized) return null;
   // if (state.rawData.length === 0) {
   //   router.push("/import");
   //   return null;
   // }
+  // ใน ValidationPage
+
 
   return (
     <div className="min-h-screen bg-gray-50">

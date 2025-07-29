@@ -9,6 +9,7 @@ import { ExportControls } from "@/components/export/export-controls"
 import { Button } from "@/components/ui/button"
 import { ArrowLeft, CheckCircle } from "lucide-react"
 import { useData } from "@/contexts/data-context"
+import { useEffect } from "react"
 
 export default function ExportPage() {
   const { state, dispatch } = useData()
@@ -24,11 +25,13 @@ export default function ExportPage() {
     dispatch({ type: "RESET_DATA" })
     router.push("/import")
   }
+  
+useEffect(() => {
+  if (state.currentStep !== 5) {
+    dispatch({ type: "SET_CURRENT_STEP", payload: 5 });
+  }
+}, [state.currentStep, dispatch]);
 
-  // if (state.processedData.length === 0) {
-  //   router.push("/import")
-  //   return null
-  // }
 
   return (
     <div className="min-h-screen bg-gray-50">

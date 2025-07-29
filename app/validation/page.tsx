@@ -27,13 +27,11 @@ export default function ValidationPage() {
     router.push("/refcode");
   };
 
-  // if (!isInitialized) return null;
-  // if (state.rawData.length === 0) {
-  //   router.push("/import");
-  //   return null;
-  // }
-  // ใน ValidationPage
-
+useEffect(() => {
+  if (state.currentStep !== 2) {
+    dispatch({ type: "SET_CURRENT_STEP", payload: 2 });
+  }
+}, [state.currentStep, dispatch]);
 
   return (
     <div className="min-h-screen bg-gray-50">

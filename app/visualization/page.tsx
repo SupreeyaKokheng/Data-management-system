@@ -9,6 +9,7 @@ import { ChartControls } from "@/components/visualization/chart-controls"
 import { Button } from "@/components/ui/button"
 import { ArrowLeft, ArrowRight } from "lucide-react"
 import { useData } from "@/contexts/data-context"
+import { useEffect } from "react"
 
 export default function VisualizationPage() {
   const { state, dispatch } = useData()
@@ -24,10 +25,11 @@ export default function VisualizationPage() {
     router.push("/export")
   }
 
-  // if (state.processedData.length === 0) {
-  //   router.push("/import")
-  //   return null
-  // }
+useEffect(() => {
+  if (state.currentStep !== 4) {
+    dispatch({ type: "SET_CURRENT_STEP", payload: 4 });
+  }
+}, [state.currentStep, dispatch]);
 
   return (
     <div className="min-h-screen bg-gray-50">

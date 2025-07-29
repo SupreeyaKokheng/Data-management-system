@@ -24,24 +24,20 @@ export default function ImportPage() {
     router.push("/validation")
   }
 
-// useEffect(() => {
-//   const stored = localStorage.getItem("uploadedData")
-//   if (stored) {
-//     const parsed = JSON.parse(stored)
-//     dispatch({
-//       type: "SET_RAW_DATA",
-//       payload: parsed,
-//     })
-//     setHasData(true)
-//   }
-// }, [])
-
 useEffect(() => {
   if (state.rawData.length > 0) {
     setHasData(true)
   }
 }, [state.rawData])
 
+useEffect(() => {
+  if (state.currentStep !== 1) {
+    dispatch({ type: "SET_CURRENT_STEP", payload: 1 });
+  }
+  if (state.rawData.length > 0) {
+    setHasData(true);
+  }
+}, [state.rawData, state.currentStep, dispatch]);
 
   return (
     <div className="min-h-screen bg-gray-50">

@@ -47,27 +47,11 @@ export default function RefCodePage() {
   }
 }, [state.processedData, dispatch, router])
 
-  // useEffect(() => {
-  //   if (state.processedData.length === 0) {
-  //     router.push("/import")
-  //     return
-  //   }
-
-  //   // Generate RefCodes for data that doesn't have them
-  //   const dataWithRefCodes = state.processedData.map((row, index) => {
-  //     // if (!row.refCode) {
-  //      if (!row.refCode && row.created_at) {
-  //       const date = new Date(row.created_at) 
-  //       const refCode = generateRefCode(date, index + 1)
-  //       return { ...row, refCode, }
-  //     }
-  //     return row
-  //   })
-
-  //   if (JSON.stringify(dataWithRefCodes) !== JSON.stringify(state.processedData)) {
-  //     dispatch({ type: "SET_PROCESSED_DATA", payload: dataWithRefCodes })
-  //   }
-  // }, [state.processedData, dispatch, router])
+  useEffect(() => {
+  if (state.currentStep !== 3) {
+    dispatch({ type: "SET_CURRENT_STEP", payload: 3 });
+  }
+}, [state.currentStep, dispatch]);
 
   const handleBack = () => {
     dispatch({ type: "SET_CURRENT_STEP", payload: 2 })

@@ -77,6 +77,12 @@ export function ValidationTable({
     });
   };
 
+  const canDeleteRow = (row: any) => {
+    const hasMissing = row.issues?.missing?.length > 0;
+    const isDuplicate = row.issues?.duplicate === true;
+    return hasMissing || isDuplicate;
+  };
+
   const validatedData = useMemo(() => {
     return validateData(processedData);
   }, [processedData, columns]);
@@ -370,6 +376,7 @@ export function ValidationTable({
                     </div>
                   </TableCell>
                   <TableCell>
+                     {canDeleteRow(row) && (
                     <Button
                       size="sm"
                       variant="destructive"
@@ -377,6 +384,7 @@ export function ValidationTable({
                     >
                       <Trash2 className="h-3 w-3" />
                     </Button>
+                     )}
                   </TableCell>
                 </TableRow>
               ))}

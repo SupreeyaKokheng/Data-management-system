@@ -164,7 +164,7 @@ export function ValidationSummary() {
         <CardContent>
           <div className="text-2xl font-bold">{summary.total}</div>
           <p className="text-xs text-muted-foreground">รายการ</p>
-          <p className="text-xs text-muted-foreground mt-2">มีปัญหา {summary.withIssues} รายการ</p>
+          <p className="text-xs text-muted-foreground mt-2">พบปัญหาทั้งหมด {summary.withIssues} แถว</p>
         </CardContent>
       </Card>
 

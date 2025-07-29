@@ -145,6 +145,7 @@ export function FileUpload({ onFileProcessed }: FileUploadProps) {
     const file = acceptedFiles[0];
     if (file) {
       setUploadedFile(file);
+      processFile(file); //ปรมวลผลทันที
     }
   }, []);
 
@@ -217,15 +218,6 @@ export function FileUpload({ onFileProcessed }: FileUploadProps) {
                 className="text-gray-400 hover:text-gray-600"
               >
                 <X className="h-4 w-4" />
-              </Button>
-            </div>
-            <div className="mt-4 flex space-x-3">
-              <Button
-                onClick={handleProcess}
-                disabled={isProcessing}
-                className="bg-primary text-primary-foreground hover:opacity-90"
-              >
-                {isProcessing ? "กำลังประมวลผล..." : "ประมวลผลไฟล์"}
               </Button>
             </div>
           </CardContent>

@@ -126,11 +126,11 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
   const [isInitialized, setIsInitialized] = useState(false);
 
   // Save to localStorage
-  useEffect(() => {
-    if (hasInitializedRef.current) {
-      localStorage.setItem("dataManagementState", JSON.stringify(state));
-    }
-  }, [state]);
+  // useEffect(() => {
+  //   if (hasInitializedRef.current) {
+  //     localStorage.setItem("dataManagementState", JSON.stringify(state));
+  //   }
+  // }, [state]);
 
   // ปรับปรุง useEffect ที่โหลดข้อมูล
   useEffect(() => {

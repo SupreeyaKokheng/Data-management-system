@@ -44,87 +44,17 @@ export function ValidationTable({
   } | null>(null);
   const [editValue, setEditValue] = useState("");
 
-  // เพิ่มฟังก์ชันสำหรับการเช็ค missing value และ null value
-  // const validateData = (processedData: any[]) => {
-  //   return processedData.map((row) => {
-  //     const issues = {
-  //       missing: [] as string[],
-  //       null: [] as string[],
-  //       duplicate: row.issues?.duplicate || false,
-  //     };
-
-  //     // ตรวจสอบทุก column
-  //     columns.forEach((column) => {
-  //       // ถ้าไม่มีข้อมูลหรือเป็นสตริงว่าง = missing value
-  //       if (
-  //         row[column] === undefined ||
-  //         row[column] === null ||
-  //         row[column] === "" ||
-  //         String(row[column]).trim() === "-"
-  //       ) {
-  //         issues.missing.push(column);
-  //       }
-  //       // ถ้ามีค่าเป็นสตริง "null" = null value
-  //       else if (String(row[column]).toLowerCase() === "null") {
-  //         issues.null.push(column);
-  //       }
-  //     });
-
-  //     return { ...row, issues };
-  //   });
-  // };
-
-  // const filteredData = useMemo(() => {
-  //   let filtered = processedData;
-
-  //   // Apply search filter
-  //   if (searchQuery) {
-  //     filtered = filtered.filter((row) =>
-  //       columns.some((col) =>
-  //         String(row[col] || "")
-  //           .toLowerCase()
-  //           .includes(searchQuery.toLowerCase())
-  //       )
-  //     );
-  //   }
-
-  //   // Apply type filter
-  //   switch (filterType) {
-  //     case "issues":
-  //       filtered = filtered.filter(
-  //         (row) =>
-  //           (row.issues?.missing && row.issues.missing.length > 0) ||
-  //           (row.issues?.null && row.issues.null.length > 0) ||
-  //           row.issues?.duplicate
-  //       );
-  //       break;
-  //     case "missing":
-  //       filtered = filtered.filter(
-  //         (row) => row.issues?.missing && row.issues.missing.length > 0
-  //       );
-  //       break;
-  //     case "null":
-  //       filtered = filtered.filter(
-  //         (row) => row.issues?.null && row.issues.null.length > 0
-  //       );
-  //       break;
-  //     case "duplicate":
-  //       filtered = filtered.filter((row) => row.issues?.duplicate);
-  //       break;
-  //     case "clean":
-  //       filtered = filtered.filter(
-  //         (row) =>
-  //           (!row.issues?.missing || row.issues.missing.length === 0) &&
-  //           (!row.issues?.null || row.issues.null.length === 0) &&
-  //           !row.issues?.duplicate
-  //       );
-  //       break;
-  //   }
-
-  //   return filtered;
-  // }, [processedData, columns, searchQuery, filterType]);
-
-  // ✅ Validate ก่อน
+  const isMissingValue = (val: any) => {
+    const norm = String(val).trim().toLowerCase();
+    return (
+      norm === "" ||
+      norm === "-" ||
+      norm === "-," ||
+      norm === "- ," ||
+      /^-+$/.test(norm) || // เช่น "--", "---"
+      /^-+[,\s]*$/.test(norm) // เช่น "-,", "--, ", "-   ,"
+    );
+  };
 
   const validateData = (data: any[]) => {
     return data.map((row) => {
@@ -136,12 +66,7 @@ export function ValidationTable({
 
       columns.forEach((column) => {
         const value = row[column];
-        if (
-          value === undefined ||
-          value === null ||
-          value === "" ||
-          String(value).trim() === "-"
-        ) {
+        if (value === undefined || value === null || isMissingValue(value)) {
           issues.missing.push(column);
         } else if (String(value).toLowerCase() === "null") {
           issues.null.push(column);
@@ -204,18 +129,37 @@ export function ValidationTable({
     }
   }, [filteredData]);
 
-  // const handleSearch = (value: string) => {
-  //   setSearchQuery(value);
-  // };
+  const normalize = (val: any) =>
+    String(val).trim().replace(/,+$/g, "").replace(/^-+$/, "-").toLowerCase();
 
-  // const handleFilter = (value: string) => {
-  //   setFilterType(value);
-  // };
+  const isEditable = (row: any, column: string) => {
+    const value = row[column];
+    const norm = normalize(value);
+
+    const isMissingOrNull =
+      value === undefined ||
+      value === null ||
+      ["", "-", "-,", "null"].includes(norm);
+
+    const wasOriginallyMissingOrNull =
+      row.issues?.missing?.includes(column) ||
+      row.issues?.null?.includes(column);
+
+    return wasOriginallyMissingOrNull && isMissingOrNull;
+  };
 
   const handleCellEdit = (rowId: string, column: string, currentValue: any) => {
-    setEditingCell({ rowId, column });
-    setEditValue(String(currentValue || ""));
+    const row = validatedData.find((r) => r.id === rowId);
+    if (row && isEditable(row, column)) {
+      setEditingCell({ rowId, column });
+      setEditValue(String(currentValue || ""));
+    }
   };
+
+  // const handleCellEdit = (rowId: string, column: string, currentValue: any) => {
+  //   setEditingCell({ rowId, column });
+  //   setEditValue(String(currentValue || ""));
+  // };
 
   const handleSaveEdit = () => {
     if (editingCell) {
@@ -269,27 +213,8 @@ export function ValidationTable({
     <Card>
       <CardHeader>
         <CardTitle>ข้อมูลที่ต้องตรวจสอบ</CardTitle>
-        <div className="flex flex-col sm:flex-row gap-4">
-          {/* <Input
-            placeholder="ค้นหาข้อมูล..."
-            value={searchQuery}
-            onChange={(e) => handleSearch(e.target.value)}
-            className="flex-1"
-          /> */}
-          {/* <Select value={filterType} onValueChange={handleFilter}> */}
-          {/* <SelectTrigger className="w-full sm:w-48">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">ทั้งหมด</SelectItem>
-              <SelectItem value="issues">มีปัญหา</SelectItem>
-              <SelectItem value="missing">Missing Values</SelectItem>
-              <SelectItem value="null">Null Values</SelectItem>
-              <SelectItem value="duplicate">Duplicates</SelectItem>
-              <SelectItem value="clean">ไม่มีปัญหา</SelectItem>
-            </SelectContent> */}
-          {/* </Select> */}
-        </div>
+        {/* <div className="flex flex-col sm:flex-row gap-4">
+        </div> */}
 
         <div className="flex flex-wrap gap-4 mb-4">
           <div className="flex items-center">
@@ -377,24 +302,6 @@ export function ValidationTable({
                         </div>
                       ) : (
                         <div className="flex items-center justify-between group">
-                          {/* <span className="truncate">
-                            {row[column] instanceof Date ? (
-                              row[column].toLocaleDateString("th-TH")
-                            ) : typeof row[column] === "object" ? (
-                              JSON.stringify(row[column])
-                            ) : row[column] !== undefined &&
-                              row[column] !== "" ? (
-                              String(row[column])
-                            ) : (
-                              <span className="text-gray-400 italic">
-                                {row.issues?.missing?.includes(column)
-                                  ? "Missing"
-                                  : row.issues?.null?.includes(column)
-                                  ? "Null"
-                                  : "-"}
-                              </span>
-                            )}
-                          </span> */}
                           <span className="truncate">
                             {column.toLowerCase().includes("date") ||
                             column.toLowerCase().includes("created") ? (
@@ -414,17 +321,21 @@ export function ValidationTable({
                           </span>
 
                           <div className="opacity-0 group-hover:opacity-100 flex space-x-1">
-                            <Button
-                              size="sm"
-                              variant="ghost"
-                              onClick={() =>
-                                handleCellEdit(row.id, column, row[column])
-                              }
-                            >
-                              <Edit className="h-3 w-3" />
-                            </Button>
-                            {(row.issues?.missing?.includes(column) ||
-                              row.issues?.null?.includes(column)) && (
+                            {isEditable(row, column) && (
+                              <Button
+                                size="sm"
+                                variant="ghost"
+                                onClick={() =>
+                                  handleCellEdit(row.id, column, row[column])
+                                }
+                              >
+                                <Edit className="h-3 w-3" />
+                              </Button>
+                            )}
+                            {/* {(row.issues?.missing?.includes(column) ||
+                              row.issues?.null?.includes(column)) && ( */}
+
+                            {isEditable(row, column) && (
                               <Button
                                 size="sm"
                                 variant="ghost"

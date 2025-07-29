@@ -176,7 +176,7 @@ export function ValidationSummary() {
         <CardContent>
           <div className="text-2xl font-bold text-red-600">{summary.missing}</div>
           <p className="text-xs text-muted-foreground">ค่าที่หายไป</p>
-          <p className="text-xs text-muted-foreground mt-2">พบใน {summary.rowsWithMissing} แถว</p>
+          <p className="text-xs text-muted-foreground mt-2">พบทั้งหมด {summary.rowsWithMissing} แถว</p>
         </CardContent>
       </Card>
 
@@ -188,7 +188,7 @@ export function ValidationSummary() {
         <CardContent>
           <div className="text-2xl font-bold text-yellow-600">{summary.null}</div>
           <p className="text-xs text-muted-foreground">ค่า null</p>
-          <p className="text-xs text-muted-foreground mt-2">พบใน {summary.rowsWithNull} แถว</p>
+          <p className="text-xs text-muted-foreground mt-2">พบทั้งหมด {summary.rowsWithNull} แถว</p>
         </CardContent>
       </Card>
 

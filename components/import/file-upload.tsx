@@ -78,11 +78,17 @@ export function FileUpload({ onFileProcessed }: FileUploadProps) {
         // Check for duplicates
         const duplicateMap = new Map();
         processedData.forEach((row, index) => {
-          const key = JSON.stringify(
-            Object.fromEntries(
-              Object.entries(row).filter(([k]) => k !== "id" && k !== "issues")
-            )
-          );
+          //ต้องเหมือนกันทุกคอลัมถึงจะซ้ำ
+          // const key = JSON.stringify(
+          //   Object.fromEntries(
+          //     Object.entries(row).filter(([k]) => k !== "id" && k !== "issues")
+          //   )
+          // );
+          const key = JSON.stringify({
+            name: row["name"]?.trim().toLowerCase() || "",
+            email: row["email"]?.trim().toLowerCase() || "",
+          });
+
           if (duplicateMap.has(key)) {
             duplicateMap.get(key).forEach((dupIndex: number) => {
               processedData[dupIndex].issues.duplicate = true;

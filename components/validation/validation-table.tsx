@@ -375,16 +375,19 @@ export function ValidationTable({
                       )}
                     </div>
                   </TableCell>
-                  <TableCell>
-                     {canDeleteRow(row) && (
-                    <Button
-                      size="sm"
-                      variant="destructive"
-                      onClick={() => handleDeleteRow(row.id)}
-                    >
-                      <Trash2 className="h-3 w-3" />
-                    </Button>
-                     )}
+                  <TableCell className="h-10 align-middle">
+                    {canDeleteRow(row) ? (
+                      <Button
+                        size="sm"
+                        variant="destructive"
+                        onClick={() => handleDeleteRow(row.id)}
+                      >
+                        <Trash2 className="h-3 w-3" />
+                      </Button>
+                    ) : (
+                      //  )}
+                      <div className="h-8" /> // div placeholder ให้สูงเท่าปุ่มถังขยะ
+                    )}
                   </TableCell>
                 </TableRow>
               ))}

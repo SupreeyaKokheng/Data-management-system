@@ -12,7 +12,7 @@ import { useData } from "@/contexts/data-context";
 import { useEffect } from "react";
 
 export default function ExportPage() {
-  const { state, dispatch} = useData();
+  const { state, dispatch } = useData();
   const router = useRouter();
 
   const handleBack = () => {
@@ -21,9 +21,9 @@ export default function ExportPage() {
   };
 
   const handleFinish = () => {
-    // Reset data and go back to start
-    dispatch({ type: "RESET_DATA" });
-    router.push("/import");
+    dispatch({ type: "RESET_DATA" }); // ล้าง context
+    localStorage.removeItem("dataManagementState"); // ล้าง localStorage
+    router.push("/import"); // กลับ
   };
 
   useEffect(() => {
@@ -32,7 +32,6 @@ export default function ExportPage() {
     }
   }, [state.currentStep, dispatch]);
 
- 
   return (
     <div className="min-h-screen bg-gray-50">
       <Header />

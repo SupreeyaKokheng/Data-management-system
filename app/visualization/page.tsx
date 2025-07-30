@@ -10,8 +10,9 @@ import { ArrowLeft, ArrowRight } from "lucide-react"
 import { useData } from "@/contexts/data-context"
 import { useEffect } from "react"
 
+
 export default function VisualizationPage() {
-  const { state, dispatch } = useData()
+  const { state, dispatch} = useData()
   const router = useRouter()
 
   const handleBack = () => {
@@ -29,6 +30,7 @@ useEffect(() => {
     dispatch({ type: "SET_CURRENT_STEP", payload: 4 });
   }
 }, [state.currentStep, dispatch]);
+
 
   return (
     <div className="min-h-screen bg-gray-50">

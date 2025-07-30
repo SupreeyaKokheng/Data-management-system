@@ -9,17 +9,13 @@ import { RefCodeSummary } from "@/components/refcode/refcode-summary"
 import { Button } from "@/components/ui/button"
 import { ArrowLeft, ArrowRight } from "lucide-react"
 import { useData } from "@/contexts/data-context"
-import { generateRefCode } from "@/lib/utils"
+
 
 export default function RefCodePage() {
   const { state, dispatch } = useData()
   const router = useRouter()
 
   useEffect(() => {
-  // if (state.processedData.length === 0) {
-  //   router.push("/import")
-  //   return
-  // }
 
   const monthGroups: Record<string, number> = {}
 

@@ -25,36 +25,34 @@ import {
 } from "@/components/ui/select";
 
 export function DataChart() {
-  const { state } = useData();
+  const { state, } = useData();
   const { processedData } = state;
 
   const [chartType, setChartType] = useState("bar");
   const [statusFilter, setStatusFilter] = useState("all");
   const [dateRangeFilter, setDateRangeFilter] = useState("all");
 
+  const now = new Date();
+  let startDate: Date | null = null;
 
-const now = new Date();
-let startDate: Date | null = null;
-
-switch (dateRangeFilter) {
-  case "3months":
-    startDate = new Date(now);
-    startDate.setMonth(startDate.getMonth() - 2); // ย้อน 2 เดือน + รวมเดือนปัจจุบัน = 3 เดือน
-    startDate.setDate(1); // ให้ตรงต้นเดือน
-    break;
-  case "6months":
-    startDate = new Date(now);
-    startDate.setMonth(startDate.getMonth() - 5); // ย้อน 5 เดือน + ปัจจุบัน = 6
-    startDate.setDate(1);
-    break;
-  case "1year":
-    startDate = new Date(now.getFullYear(), now.getMonth(), 1);
-    startDate.setFullYear(startDate.getFullYear() - 1);
-    break;
-  default:
-    startDate = null;
-}
-
+  switch (dateRangeFilter) {
+    case "3months":
+      startDate = new Date(now);
+      startDate.setMonth(startDate.getMonth() - 2); // ย้อน 2 เดือน + รวมเดือนปัจจุบัน = 3 เดือน
+      startDate.setDate(1); // ให้ตรงต้นเดือน
+      break;
+    case "6months":
+      startDate = new Date(now);
+      startDate.setMonth(startDate.getMonth() - 5); // ย้อน 5 เดือน + ปัจจุบัน = 6
+      startDate.setDate(1);
+      break;
+    case "1year":
+      startDate = new Date(now.getFullYear(), now.getMonth(), 1);
+      startDate.setFullYear(startDate.getFullYear() - 1);
+      break;
+    default:
+      startDate = null;
+  }
 
   // Filter data by status
   const filteredData = processedData.filter((row) => {
@@ -72,8 +70,6 @@ switch (dateRangeFilter) {
 
     return statusOk && dateOk;
   });
-
-
 
   // Group by month
   const chartData = filteredData.reduce((acc, row) => {
@@ -200,38 +196,37 @@ switch (dateRangeFilter) {
           </div>
         </div>
 
-       <div className="flex gap-4 items-center">
-  <div>
-    <p className="text-sm font-medium text-gray-700 mb-1">สถานะ</p>
-    <Select value={statusFilter} onValueChange={setStatusFilter}>
-      <SelectTrigger className="w-44">
-        <SelectValue placeholder="เลือกสถานะ" />
-      </SelectTrigger>
-      <SelectContent>
-        <SelectItem value="all">ทั้งหมด</SelectItem>
-        <SelectItem value="active">Active</SelectItem>
-        <SelectItem value="inactive">Inactive</SelectItem>
-        <SelectItem value="null">ไม่มีสถานะ</SelectItem>
-      </SelectContent>
-    </Select>
-  </div>
+        <div className="flex gap-4 items-center">
+          <div>
+            <p className="text-sm font-medium text-gray-700 mb-1">สถานะ</p>
+            <Select value={statusFilter} onValueChange={setStatusFilter}>
+              <SelectTrigger className="w-44">
+                <SelectValue placeholder="เลือกสถานะ" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">ทั้งหมด</SelectItem>
+                <SelectItem value="active">Active</SelectItem>
+                <SelectItem value="inactive">Inactive</SelectItem>
+                <SelectItem value="null">ไม่มีสถานะ</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
 
-  <div>
-    <p className="text-sm font-medium text-gray-700 mb-1">ช่วงเวลา</p>
-    <Select value={dateRangeFilter} onValueChange={setDateRangeFilter}>
-      <SelectTrigger className="w-44">
-        <SelectValue placeholder="เลือกช่วงเวลา" />
-      </SelectTrigger>
-      <SelectContent>
-        <SelectItem value="all">ทั้งหมด</SelectItem>
-        <SelectItem value="3months">3 เดือนล่าสุด</SelectItem>
-        <SelectItem value="6months">6 เดือนล่าสุด</SelectItem>
-        <SelectItem value="1year">1 ปีล่าสุด</SelectItem>
-      </SelectContent>
-    </Select>
-  </div>
-</div>
-
+          <div>
+            <p className="text-sm font-medium text-gray-700 mb-1">ช่วงเวลา</p>
+            <Select value={dateRangeFilter} onValueChange={setDateRangeFilter}>
+              <SelectTrigger className="w-44">
+                <SelectValue placeholder="เลือกช่วงเวลา" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">ทั้งหมด</SelectItem>
+                <SelectItem value="3months">3 เดือนล่าสุด</SelectItem>
+                <SelectItem value="6months">6 เดือนล่าสุด</SelectItem>
+                <SelectItem value="1year">1 ปีล่าสุด</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
       </CardHeader>
 
       <CardContent>

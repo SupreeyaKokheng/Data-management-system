@@ -11,8 +11,9 @@ import { ArrowLeft, ArrowRight } from "lucide-react";
 import { useData } from "@/contexts/data-context";
 import { useEffect, useState } from "react";
 
+
 export default function ValidationPage() {
-  const { state, dispatch, isInitialized } = useData();
+  const { state, dispatch } = useData();
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState("");
   const [filterType, setFilterType] = useState("all");

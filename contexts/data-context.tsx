@@ -198,6 +198,18 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
     }
   }, []);
 
+  useEffect(() => {
+  if (hasInitializedRef.current) {
+    localStorage.setItem(
+      "dataManagementState",
+      JSON.stringify({
+        ...state,
+        processedData: state.processedData,
+      })
+    );
+  }
+}, [state.processedData]);
+
   return (
     // <DataContext.Provider value={{ state, dispatch,  }}>
     <DataContext.Provider value={{ state, dispatch, isInitialized }}>

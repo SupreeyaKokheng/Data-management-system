@@ -67,7 +67,6 @@ export function RefCodeTable() {
                     {column}
                   </TableHead>
                 ))}
-                <TableHead className="w-20">การจัดการ</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -122,17 +121,7 @@ export function RefCodeTable() {
                         : row[column] || "-"}
                     </TableCell>
                   ))}
-                  <TableCell>
-                    <div className="flex space-x-1">
-                      {(row.issues?.missing.length ||
-                        row.issues?.null.length ||
-                        row.issues?.duplicate) && (
-                        <Badge variant="secondary" className="text-xs">
-                          แก้ไขแล้ว
-                        </Badge>
-                      )}
-                    </div>
-                  </TableCell>
+                  
                 </TableRow>
               ))}
             </TableBody>

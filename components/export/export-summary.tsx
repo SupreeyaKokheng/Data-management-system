@@ -22,7 +22,7 @@ export function ExportSummary() {
   )
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4">
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-sm font-medium">ข้อมูลทั้งหมด</CardTitle>
@@ -30,28 +30,6 @@ export function ExportSummary() {
         </CardHeader>
         <CardContent>
           <div className="text-2xl font-bold">{summary.total}</div>
-          <p className="text-xs text-muted-foreground">รายการ</p>
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">มี RefCode</CardTitle>
-          <Hash className="h-4 w-4 text-primary" />
-        </CardHeader>
-        <CardContent>
-          <div className="text-2xl font-bold">{summary.withRefCode}</div>
-          <p className="text-xs text-muted-foreground">รายการ</p>
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">ผ่านการแก้ไข</CardTitle>
-          <CheckCircle className="h-4 w-4 text-green-600" />
-        </CardHeader>
-        <CardContent>
-          <div className="text-2xl font-bold">{summary.processed}</div>
           <p className="text-xs text-muted-foreground">รายการ</p>
         </CardContent>
       </Card>

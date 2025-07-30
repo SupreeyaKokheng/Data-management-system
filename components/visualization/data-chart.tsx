@@ -67,9 +67,9 @@ export function DataChart() {
             <Line
               type="monotone"
               dataKey="count"
-              stroke="#4f46e5"
+              stroke="hsl(var(--primary))"
               strokeWidth={2}
-              dot={{ fill: "#4f46e5", strokeWidth: 2, r: 4 }}
+              dot={{ fill: "hsl(var(--primary))", strokeWidth: 2, r: 4 }}
             />
           </LineChart>
         )
@@ -81,7 +81,7 @@ export function DataChart() {
             <XAxis dataKey="monthLabel" />
             <YAxis />
             <Tooltip />
-            <Area type="monotone" dataKey="count" stroke="#4f46e5" fill="#4f46e5" fillOpacity={0.3} />
+            <Area type="monotone" dataKey="count" stroke="hsl(var(--primary))" fill="hsl(var(--primary))" fillOpacity={0.3} />
           </AreaChart>
         )
 
@@ -92,7 +92,7 @@ export function DataChart() {
             <XAxis dataKey="monthLabel" />
             <YAxis />
             <Tooltip />
-            <Bar dataKey="count" fill="#4f46e5" radius={[4, 4, 0, 0]} />
+            <Bar dataKey="count" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} />
           </BarChart>
         )
     }

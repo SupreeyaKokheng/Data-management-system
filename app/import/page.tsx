@@ -72,7 +72,20 @@ export default function ImportPage() {
             <>
               <DataPreview />
 
-              <div className="flex justify-end">
+              <div className="flex justify-between items-center">
+                <Button
+                  variant="outline"
+                  className="text-red-600 border-red-300 hover:bg-red-50"
+                  onClick={() => {
+                    dispatch({ type: "RESET_DATA" });
+                    localStorage.removeItem("dataManagementState");
+                    setHasData(false);
+                  }}
+                >
+                  ล้างข้อมูลที่นำเข้า
+                </Button>
+
+                {/* <div className="flex justify-end"> */}
                 <Button
                   onClick={handleNext}
                   className="bg-primary text-primary-foreground hover:opacity-90"

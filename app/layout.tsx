@@ -11,7 +11,13 @@ const inter = Inter({ subsets: ["latin"] })
 export const metadata: Metadata = {
   title: "ระบบจัดการข้อมูล",
   description: "ระบบนำเข้า ตรวจสอบ และจัดการข้อมูลแบบ Responsive",
-    generator: 'v0.dev'
+    // generator: 'v0.dev'
+   icons: {
+    icon: [
+      { url: "/logo.png", sizes: "any", type: "image/png" },
+      { url: "/favicon.ico", rel: "alternate icon", type: "image/x-icon" }
+    ]
+  }
 }
 
 export default function RootLayout({

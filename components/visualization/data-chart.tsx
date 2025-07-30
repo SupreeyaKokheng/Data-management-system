@@ -32,27 +32,31 @@ export function DataChart() {
   const [statusFilter, setStatusFilter] = useState("all");
   const [dateRangeFilter, setDateRangeFilter] = useState("all");
 
-  const now = new Date();
-  let startDate: Date | null = null;
+const now = new Date()
+let startDate: Date | null = null
 
-  switch (dateRangeFilter) {
-    case "3months":
-      startDate = new Date(now);
-      startDate.setMonth(startDate.getMonth() - 2); // ย้อน 2 เดือน + รวมเดือนปัจจุบัน = 3 เดือน
-      startDate.setDate(1); // ให้ตรงต้นเดือน
-      break;
-    case "6months":
-      startDate = new Date(now);
-      startDate.setMonth(startDate.getMonth() - 5); // ย้อน 5 เดือน + ปัจจุบัน = 6
-      startDate.setDate(1);
-      break;
-    case "1year":
-      startDate = new Date(now.getFullYear(), now.getMonth(), 1);
-      startDate.setFullYear(startDate.getFullYear() - 1);
-      break;
-    default:
-      startDate = null;
-  }
+switch (dateRangeFilter) {
+  case "3months":
+    startDate = new Date(now)
+    startDate.setDate(1)
+    startDate.setMonth(now.getMonth() - 2) // รวมปัจจุบัน = 3 เดือน
+    break
+
+  case "6months":
+    startDate = new Date(now)
+    startDate.setDate(1)
+    startDate.setMonth(now.getMonth() - 5) // รวมปัจจุบัน = 6 เดือน
+    break
+
+  case "1year":
+    startDate = new Date(now)
+    startDate.setDate(1)
+    startDate.setFullYear(now.getFullYear() - 1)
+    break
+
+  default:
+    startDate = null
+}
 
   // Filter data by status
   const filteredData = processedData.filter((row) => {

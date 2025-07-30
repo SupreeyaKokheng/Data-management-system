@@ -5,7 +5,6 @@ import { Header } from "@/components/layout/header"
 import { StepIndicator } from "@/components/layout/step-indicator"
 import { DataChart } from "@/components/visualization/data-chart"
 import { ChartSummary } from "@/components/visualization/chart-summary"
-import { ChartControls } from "@/components/visualization/chart-controls"
 import { Button } from "@/components/ui/button"
 import { ArrowLeft, ArrowRight } from "lucide-react"
 import { useData } from "@/contexts/data-context"
@@ -44,7 +43,6 @@ useEffect(() => {
           </div>
 
           <ChartSummary />
-          <ChartControls />
           <DataChart />
 
           <div className="flex justify-between">

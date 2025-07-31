@@ -34,6 +34,13 @@ export function ExportControls() {
     }
 
     setIsExporting(true);
+    
+    function formatDateToDMY(date: Date): string {
+      const day = String(date.getDate()).padStart(2, "0");
+      const month = String(date.getMonth() + 1).padStart(2, "0"); // เดือนเริ่มที่ 0
+      const year = date.getFullYear(); // ค.ศ.
+      return `${day}/${month}/${year}`; // เช่น 05/01/2025
+    }
 
     try {
       const exportData = processedData.map((row, index) => ({
@@ -42,7 +49,10 @@ export function ExportControls() {
         id: row.id,
         name: row.name || "",
         email: row.email || "",
-        created_at: row.created_at ? new Date(row.created_at) : "", // ให้ Excel อ่านเป็นวันที่ได้
+
+        created_at: row.created_at
+          ? formatDateToDMY(new Date(row.created_at))
+          : "",
         status: row.status || "",
       }));
 

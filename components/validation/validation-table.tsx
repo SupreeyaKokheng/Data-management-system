@@ -20,7 +20,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { Trash2, Edit, RotateCcw } from "lucide-react";
+import { Trash2, Edit, RotateCcw, Eraser} from "lucide-react";
 import { DataRow, useData } from "@/contexts/data-context";
 import { cn } from "@/lib/utils";
 import { formatThaiDate } from "@/lib/utils";
@@ -77,6 +77,15 @@ export function ValidationTable({
 
       return { ...row, issues };
     });
+  };
+
+  const handleManualDelete = (row: DataRow) => {
+    const newRows = state.processedData.filter((r) => r.id !== row.id);
+    dispatch({ type: "DELETE_ROW", payload: row.id });
+
+    setTimeout(() => {
+      markSmartDuplicateRows(newRows);
+    }, 0);
   };
 
   const canDeleteRow = (row: any) => {
@@ -221,21 +230,43 @@ export function ValidationTable({
 
     if (group.length <= 1) return;
 
-    const bestRow = group.reduce((prev, curr) => {
-      const getPriority = (status: string) => {
-        const p: Record<string, number> = {
-          active: 3,
-          inactive: 2,
-          null: 1,
-          missing: 0,
-        };
-        return p[status?.toLowerCase()] ?? -1;
+    // const bestRow = group.reduce((prev, curr) => {
+    const getPriority = (status: string) => {
+      const p: Record<string, number> = {
+        active: 3,
+        inactive: 2,
+        null: 1,
+        missing: 0,
       };
-      return getPriority(curr.status) > getPriority(prev.status) ? curr : prev;
-    });
+      return p[status?.toLowerCase()] ?? -1;
+    };
+    //   return getPriority(curr.status) > getPriority(prev.status) ? curr : prev;
+    //  });
+
+    const maxPriority = Math.max(
+      ...group.map((row) => getPriority(row.status))
+    );
+    const bestRows = group.filter(
+      (row) => getPriority(row.status) === maxPriority
+    );
+
+    let keepRow: DataRow;
+
+    if (bestRows.length === 1) {
+      keepRow = bestRows[0];
+    } else {
+      // มีหลายตัวที่ดีที่สุด
+      if (bestRows.some((r) => r.id !== targetRow.id)) {
+        // ถ้า targetRow ไม่ใช่ best → เก็บ best ตัวอื่น
+        keepRow = bestRows.find((r) => r.id !== targetRow.id)!;
+      } else {
+        // ถ้า targetRow คือหนึ่งใน best → เก็บ best ตัวอื่นที่ id ไม่ซ้ำ
+        keepRow = bestRows.find((r) => r.id !== targetRow.id) || bestRows[0];
+      }
+    }
 
     const idsToDelete = group
-      .filter((row) => row.id !== bestRow.id)
+      .filter((row) => row.id !== keepRow.id)
       .map((row) => row.id);
 
     // ✅ ลบทั้งหมดที่ไม่ใช่แถวดีที่สุด
@@ -438,34 +469,39 @@ export function ValidationTable({
                     </div>
                   </TableCell>
                   <TableCell className="h-10 align-middle">
-                    {canDeleteRow(row) ? (
+                    {/* {canDeleteRow(row) ? ( */}
+                    {row.issues?.duplicate && (
                       <Button
                         size="sm"
                         variant="default"
                         className="bg-primary text-primary-foreground hover:opacity-90"
-                        onClick={() => {
-                          dispatch({ type: "DELETE_ROW", payload: row.id });
-                        }}
+                        onClick={() => handleManualDelete(row)}
+                        title="เลือกลบเอง"
                       >
-                        <Trash2 className="h-3 w-3" />
+                        <Eraser className="h-3 w-3" />
                       </Button>
-                    ) : (
-                      //  )}
-                      <div className="h-8" /> // div placeholder ให้สูงเท่าปุ่มถังขยะ
+                      // ) : (
+                      //   //  )}
+                      //   <div className="h-8" /> // ให้สูงเท่าปุ่มถังขยะ
                     )}
                   </TableCell>
+
                   <TableCell className="h-10 align-middle">
                     {row.issues?.autoRemoveSuggestion === true && (
                       <Button
                         size="sm"
                         variant="destructive"
                         onClick={() => handleDeleteGroup(row)}
-                        title="ลบทุกแถวซ้ำที่เกี่ยวข้อง ยกเว้นแถวที่ดีที่สุด"
+                        title="ลบทุกแถวซ้ำ ยกเว้นแถวที่ดีที่สุด"
                       >
                         <Trash2 className="h-3 w-3" />
                       </Button>
                       // ) : (
                       //   <div className="h-8" />
+                    )}
+
+                    {!row.issues?.duplicate && !canDeleteRow(row) && (
+                      <div className="h-8" />
                     )}
                   </TableCell>
                 </TableRow>

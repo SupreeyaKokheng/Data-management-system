@@ -81,7 +81,7 @@ const handleFilter = (value: string) => {
             มีปัญหา
           </Badge>
           <Badge
-            variant={activeFilter === "missing" ? "destructive" : "secondary"}
+            variant={activeFilter === "missing" ? "default" : "secondary"}
             className="cursor-pointer"
             onClick={() => handleFilter("missing")}
           >
@@ -89,14 +89,16 @@ const handleFilter = (value: string) => {
           </Badge>
           <Badge
             variant={activeFilter === "null" ? "default" : "secondary"}
-            className="cursor-pointer bg-yellow-500 hover:bg-yellow-600"
+             className="cursor-pointer"
+            // className="cursor-pointer bg-yellow-500 hover:bg-yellow-600"
             onClick={() => handleFilter("null")}
           >
             Null
           </Badge>
           <Badge
             variant={activeFilter === "duplicate" ? "default" : "secondary"}
-            className="cursor-pointer bg-blue-500 hover:bg-blue-600"
+             className="cursor-pointer"
+            // className="cursor-pointer bg-blue-500 hover:bg-blue-600"
             onClick={() => handleFilter("duplicate")}
           >
             Duplicate

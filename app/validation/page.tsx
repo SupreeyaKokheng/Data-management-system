@@ -32,7 +32,7 @@ export default function ValidationPage() {
       const name = row.name?.trim().toLowerCase() || "";
       const email = row.email?.trim().toLowerCase() || "";
 
-      if (!name || !email) return;
+      // if (!name || !email) return;
 
       const key = `${name}||${email}`;
       if (!groupMap.has(key)) groupMap.set(key, []);

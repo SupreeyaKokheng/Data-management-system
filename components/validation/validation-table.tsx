@@ -20,7 +20,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { Trash2, Edit, RotateCcw, Eraser} from "lucide-react";
+import { Trash2, Edit, RotateCcw, Eraser } from "lucide-react";
 import { DataRow, useData } from "@/contexts/data-context";
 import { cn } from "@/lib/utils";
 import { formatThaiDate } from "@/lib/utils";
@@ -470,7 +470,9 @@ export function ValidationTable({
                   </TableCell>
                   <TableCell className="h-10 align-middle">
                     {/* {canDeleteRow(row) ? ( */}
-                    {row.issues?.duplicate && (
+
+                    {/* {row.issues?.duplicate && ( */}
+                    {canDeleteRow(row) && (
                       <Button
                         size="sm"
                         variant="default"

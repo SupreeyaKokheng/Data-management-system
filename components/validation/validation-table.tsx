@@ -36,8 +36,7 @@ export function ValidationTable({
 }: ValidationTableProps) {
   const { state, dispatch } = useData();
   const { processedData, columns } = state;
-  // const [searchQuery, setSearchQuery] = useState("");
-  // const [filterType, setFilterType] = useState("all");
+  const visibleColumns = columns.filter((col) => col !== "id");
   const [editingCell, setEditingCell] = useState<{
     rowId: string;
     column: string;
@@ -246,7 +245,7 @@ export function ValidationTable({
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead className="w-12">#</TableHead>
+                <TableHead className="w-12">#</TableHead>{" "}
                 {columns.map((column) => (
                   <TableHead
                     key={column}

@@ -49,7 +49,11 @@ type DataAction =
     }
   | { type: "UPDATE_ROW"; payload: { id: string; data: Partial<DataRow> } }
   | { type: "DELETE_ROW"; payload: string }
-  | { type: "RESET_DATA" };
+  | { type: "RESET_DATA" }
+  | {
+      type: "BULK_UPDATE_ROWS";
+      payload: { updates: { id: string; data: Partial<DataRow> }[] };
+    };
 
 const initialState: DataState = {
   rawData: [],
@@ -107,6 +111,17 @@ function dataReducer(state: DataState, action: DataAction): DataState {
           (row) => row.id !== action.payload
         ),
       };
+    case "BULK_UPDATE_ROWS":
+      const updatesMap = new Map(
+        action.payload.updates.map((u) => [u.id, u.data])
+      );
+      return {
+        ...state,
+        processedData: state.processedData.map((row) =>
+          updatesMap.has(row.id) ? { ...row, ...updatesMap.get(row.id) } : row
+        ),
+      };
+
     case "RESET_DATA":
       return initialState;
     default:
@@ -170,24 +185,24 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
               payload: parsedState.currentStep,
             });
           }
-        
-        // โหลด validationSettings ถ้ามี
-        if (parsedState.validationSettings) {
-          // อาจต้องเพิ่ม action สำหรับ SET_VALIDATION_SETTINGS
-          Object.entries(parsedState.validationSettings).forEach(
-            ([key, setting]) => {
-              dispatch({
-                type: "UPDATE_VALIDATION_SETTINGS",
-                payload: {
-                  key,
-                  action: (setting as any).action,
-                  value: (setting as any).value,
-                },
-              });
-            }
-          );
+
+          // โหลด validationSettings ถ้ามี
+          if (parsedState.validationSettings) {
+            // อาจต้องเพิ่ม action สำหรับ SET_VALIDATION_SETTINGS
+            Object.entries(parsedState.validationSettings).forEach(
+              ([key, setting]) => {
+                dispatch({
+                  type: "UPDATE_VALIDATION_SETTINGS",
+                  payload: {
+                    key,
+                    action: (setting as any).action,
+                    value: (setting as any).value,
+                  },
+                });
+              }
+            );
+          }
         }
-      }
       } catch (error) {
         console.error("Error loading saved state:", error);
       }
@@ -199,16 +214,16 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   useEffect(() => {
-  if (hasInitializedRef.current) {
-    localStorage.setItem(
-      "dataManagementState",
-      JSON.stringify({
-        ...state,
-        processedData: state.processedData,
-      })
-    );
-  }
-}, [state.processedData]);
+    if (hasInitializedRef.current) {
+      localStorage.setItem(
+        "dataManagementState",
+        JSON.stringify({
+          ...state,
+          processedData: state.processedData,
+        })
+      );
+    }
+  }, [state.processedData]);
 
   return (
     // <DataContext.Provider value={{ state, dispatch,  }}>

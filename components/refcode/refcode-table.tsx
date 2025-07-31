@@ -21,6 +21,7 @@ import { formatThaiDate } from "@/lib/utils";
 export function RefCodeTable() {
   const { state, dispatch } = useData();
   const { processedData, columns } = state;
+  // const visibleColumns = columns.filter((col) => col !== "id");
   const [editingRefCode, setEditingRefCode] = useState<string | null>(null);
   const [editValue, setEditValue] = useState("");
 
@@ -59,10 +60,9 @@ export function RefCodeTable() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead className="w-12">#</TableHead>
-                <TableHead className="w-32">RefCode</TableHead>
+                <TableHead className="w-12">#</TableHead>             <TableHead className="w-32">RefCode</TableHead>
                 {/* <TableHead className="w-32">วันที่สร้าง</TableHead> */}
-                {columns.slice(0, 3).map((column) => (
+             {columns.map((column) => (
                   <TableHead key={column} className="whitespace-nowrap">
                     {column}
                   </TableHead>
@@ -74,46 +74,11 @@ export function RefCodeTable() {
                 <TableRow key={row.id}>
                   <TableCell className="font-medium">{index + 1}</TableCell>
                   <TableCell>
-                    {editingRefCode === row.id ? (
-                      <div className="flex items-center space-x-2">
-                        <Input
-                          value={editValue}
-                          onChange={(e) => setEditValue(e.target.value)}
-                          className="h-8 w-24"
-                          maxLength={7}
-                        />
-                        <Button
-                          size="sm"
-                          onClick={() => handleSaveRefCode(row.id)}
-                        >
-                          <Check className="h-3 w-3" />
-                        </Button>
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={handleCancelEdit}
-                        >
-                          <X className="h-3 w-3" />
-                        </Button>
-                      </div>
-                    ) : (
-                      <div className="flex items-center space-x-2">
-                        <Badge variant="outline" className="font-mono">
-                          {row.refCode}
-                        </Badge>
-                        <Button
-                          size="sm"
-                          variant="ghost"
-                          onClick={() =>
-                            handleEditRefCode(row.id, row.refCode || "")
-                          }
-                        >
-                          <Edit className="h-3 w-3" />
-                        </Button>
-                      </div>
-                    )}
+                    <Badge variant="outline" className="font-mono">
+                      {row.refCode}
+                    </Badge>
                   </TableCell>
-                  {columns.slice(0, 3).map((column) => (
+                  {columns.map((column) => (
                     <TableCell key={column} className="truncate max-w-32">
                       {column.toLowerCase().includes("date") ||
                       column.toLowerCase().includes("created")
@@ -121,7 +86,6 @@ export function RefCodeTable() {
                         : row[column] || "-"}
                     </TableCell>
                   ))}
-                  
                 </TableRow>
               ))}
             </TableBody>

@@ -35,22 +35,23 @@ export function ExportTable() {
               <TableRow>
                 <TableHead className="w-12">#</TableHead>
                 <TableHead>RefCode</TableHead>
+                <TableHead>ID</TableHead>
                 <TableHead>ชื่อ</TableHead>
                 <TableHead>อีเมล</TableHead>
                 <TableHead>วันที่สร้าง</TableHead>
                 <TableHead>สถานะ</TableHead>
-            
               </TableRow>
             </TableHeader>
             <TableBody>
               {previewData.map((row, index) => (
                 <TableRow key={row.id}>
-                  <TableCell className="font-medium">{index + 1}</TableCell>
+                  <TableCell className="font-medium">{index + 1}</TableCell>        
                   <TableCell>
                     <Badge variant="outline" className="font-mono">
                       {row.refCode}
                     </Badge>
                   </TableCell>
+                   <TableCell>{row.id}</TableCell>
                   <TableCell>{row.name || "-"}</TableCell>
                   <TableCell>{row.email || "-"}</TableCell>
                   <TableCell>

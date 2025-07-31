@@ -56,7 +56,7 @@ export function FileUpload({ onFileProcessed }: FileUploadProps) {
 
         // Add unique ID to each row and detect issues
         const processedData = data.map((row, index) => {
-          const rowWithId = { ...row, id: generateId() };
+          const rowWithId = { ...row }; 
           const issues = {
             missing: [] as string[],
             null: [] as string[],
@@ -101,7 +101,7 @@ export function FileUpload({ onFileProcessed }: FileUploadProps) {
         });
 
         const columns = Object.keys(data[0]).filter(
-          (key) => key !== "id" && key !== "issues"
+          (key) =>  key !== "issues"
         );
 
         dispatch({

@@ -37,8 +37,9 @@ export function ExportControls() {
 
     try {
       const exportData = processedData.map((row, index) => ({
-        id: index + 1,
+        no: index + 1,
         refCode: row.refCode || "",
+        id: row.id,
         name: row.name || "",
         email: row.email || "",
         created_at: row.created_at ? new Date(row.created_at) : "", // ให้ Excel อ่านเป็นวันที่ได้
@@ -136,8 +137,6 @@ export function ExportControls() {
             </Button>
           </div>
         </CardContent>
-
-        
       </CardContent>
     </Card>
   );

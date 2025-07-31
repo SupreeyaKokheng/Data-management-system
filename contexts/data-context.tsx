@@ -19,6 +19,7 @@ export interface DataRow {
     missing: string[];
     null: string[];
     duplicate: boolean;
+    autoRemoveSuggestion?: boolean;
   };
 }
 

@@ -21,7 +21,7 @@ import {
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Trash2, Edit, RotateCcw } from "lucide-react";
-import { useData } from "@/contexts/data-context";
+import { DataRow, useData } from "@/contexts/data-context";
 import { cn } from "@/lib/utils";
 import { formatThaiDate } from "@/lib/utils";
 
@@ -29,10 +29,12 @@ import { formatThaiDate } from "@/lib/utils";
 interface ValidationTableProps {
   searchQuery: string;
   filterType: string;
+  markSmartDuplicateRows: (rows: DataRow[]) => void;
 }
 export function ValidationTable({
   searchQuery,
   filterType,
+  markSmartDuplicateRows,
 }: ValidationTableProps) {
   const { state, dispatch } = useData();
   const { processedData, columns } = state;
@@ -61,6 +63,7 @@ export function ValidationTable({
         missing: [] as string[],
         null: [] as string[],
         duplicate: row.issues?.duplicate || false,
+        autoRemoveSuggestion: row.issues?.autoRemoveSuggestion || false,
       };
 
       columns.forEach((column) => {
@@ -108,12 +111,26 @@ export function ValidationTable({
             row.issues?.null?.length > 0 ||
             row.issues?.duplicate
         );
+      case "duplicate":
+        return filtered
+          .filter((row) => row.issues?.duplicate)
+          .sort((a, b) => {
+            const nameA = (a.name || "").toLowerCase();
+            const nameB = (b.name || "").toLowerCase();
+            const emailA = (a.email || "").toLowerCase();
+            const emailB = (b.email || "").toLowerCase();
+
+            if (nameA === nameB) {
+              return emailA.localeCompare(emailB);
+            }
+            return nameA.localeCompare(nameB);
+          });
       case "missing":
         return filtered.filter((row) => row.issues?.missing?.length > 0);
       case "null":
         return filtered.filter((row) => row.issues?.null?.length > 0);
-      case "duplicate":
-        return filtered.filter((row) => row.issues?.duplicate);
+      // case "duplicate":
+      //   return filtered.filter((row) => row.issues?.duplicate);
       case "clean":
         return filtered.filter(
           (row) =>
@@ -185,8 +202,53 @@ export function ValidationTable({
     setEditValue("");
   };
 
-  const handleDeleteRow = (rowId: string) => {
-    dispatch({ type: "DELETE_ROW", payload: rowId });
+  // const handleDeleteRow = (rowId: string) => {
+  //   dispatch({ type: "DELETE_ROW", payload: rowId });
+  // };
+  const handleDeleteGroup = (targetRow: any) => {
+    const name = targetRow.name?.trim().toLowerCase() || "";
+    const email = targetRow.email?.trim().toLowerCase() || "";
+    const key = `${name}||${email}`;
+
+    const group = processedData.filter((row) => {
+      const rowKey = `${(row.name || "").trim().toLowerCase()}||${(
+        row.email || ""
+      )
+        .trim()
+        .toLowerCase()}`;
+      return rowKey === key;
+    });
+
+    if (group.length <= 1) return;
+
+    const bestRow = group.reduce((prev, curr) => {
+      const getPriority = (status: string) => {
+        const p: Record<string, number> = {
+          active: 3,
+          inactive: 2,
+          null: 1,
+          missing: 0,
+        };
+        return p[status?.toLowerCase()] ?? -1;
+      };
+      return getPriority(curr.status) > getPriority(prev.status) ? curr : prev;
+    });
+
+    const idsToDelete = group
+      .filter((row) => row.id !== bestRow.id)
+      .map((row) => row.id);
+
+    // ✅ ลบทั้งหมดที่ไม่ใช่แถวดีที่สุด
+    idsToDelete.forEach((id) => {
+      dispatch({ type: "DELETE_ROW", payload: id });
+    });
+
+    setTimeout(() => {
+      const newRows = state.processedData.filter(
+        (r) => !idsToDelete.includes(r.id)
+      );
+      markSmartDuplicateRows(newRows);
+    }, 0);
   };
 
   const handleReplaceWithRandom = (rowId: string, column: string) => {
@@ -256,6 +318,7 @@ export function ValidationTable({
                 ))}
                 <TableHead className="w-20">สถานะ</TableHead>
                 <TableHead className="w-32">การจัดการ</TableHead>
+                <TableHead className="w-32">ลบอัตโนมัติ</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -378,14 +441,31 @@ export function ValidationTable({
                     {canDeleteRow(row) ? (
                       <Button
                         size="sm"
-                        variant="destructive"
-                        onClick={() => handleDeleteRow(row.id)}
+                        variant="default"
+                        className="bg-primary text-primary-foreground hover:opacity-90"
+                        onClick={() => {
+                          dispatch({ type: "DELETE_ROW", payload: row.id });
+                        }}
                       >
                         <Trash2 className="h-3 w-3" />
                       </Button>
                     ) : (
                       //  )}
                       <div className="h-8" /> // div placeholder ให้สูงเท่าปุ่มถังขยะ
+                    )}
+                  </TableCell>
+                  <TableCell className="h-10 align-middle">
+                    {row.issues?.autoRemoveSuggestion === true && (
+                      <Button
+                        size="sm"
+                        variant="destructive"
+                        onClick={() => handleDeleteGroup(row)}
+                        title="ลบทุกแถวซ้ำที่เกี่ยวข้อง ยกเว้นแถวที่ดีที่สุด"
+                      >
+                        <Trash2 className="h-3 w-3" />
+                      </Button>
+                      // ) : (
+                      //   <div className="h-8" />
                     )}
                   </TableCell>
                 </TableRow>

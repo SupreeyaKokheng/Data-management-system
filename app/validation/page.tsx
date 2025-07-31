@@ -8,15 +8,88 @@ import { ValidationSummary } from "@/components/validation/validation-summary";
 import { ValidationControls } from "@/components/validation/validation-controls";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, ArrowRight } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
 import { useData } from "@/contexts/data-context";
-import { useEffect, useState } from "react";
-
+import type { DataRow } from "@/contexts/data-context";
 
 export default function ValidationPage() {
   const { state, dispatch } = useData();
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState("");
   const [filterType, setFilterType] = useState("all");
+
+  const markSmartDuplicateRows = (rows: DataRow[]) => {
+    const statusPriority = {
+      active: 3,
+      inactive: 2,
+      null: 1,
+      missing: 0,
+    };
+
+    const groupMap = new Map<string, DataRow[]>();
+
+    rows.forEach((row) => {
+      const name = row.name?.trim().toLowerCase() || "";
+      const email = row.email?.trim().toLowerCase() || "";
+
+      if (!name || !email) return;
+
+      const key = `${name}||${email}`;
+      if (!groupMap.has(key)) groupMap.set(key, []);
+      groupMap.get(key)!.push(row);
+    });
+
+    const updated: DataRow[] = rows.map((row) => {
+      const name = row.name?.trim().toLowerCase() || "";
+      const email = row.email?.trim().toLowerCase() || "";
+      const key = `${name}||${email}`;
+      const group = key ? groupMap.get(key) || [] : [];
+
+      if (!name || !email || group.length <= 1) {
+        return {
+          ...row,
+          issues: {
+            ...row.issues,
+            missing: row.issues?.missing ?? [],
+            null: row.issues?.null ?? [],
+            duplicate: false,
+            autoRemoveSuggestion: false,
+          },
+        };
+      }
+
+      const bestRow = group.reduce((prev, curr) => {
+        const p1 =
+          statusPriority[
+            String(
+              prev.status || ""
+            ).toLowerCase() as keyof typeof statusPriority
+          ] ?? -1;
+        const p2 =
+          statusPriority[
+            String(
+              curr.status || ""
+            ).toLowerCase() as keyof typeof statusPriority
+          ] ?? -1;
+        return p2 > p1 ? curr : prev;
+      });
+
+      const shouldRemove = row.id !== bestRow.id;
+
+      return {
+        ...row,
+        issues: {
+          ...row.issues,
+          missing: row.issues?.missing ?? [],
+          null: row.issues?.null ?? [],
+          duplicate: true,
+          autoRemoveSuggestion: shouldRemove,
+        },
+      };
+    });
+
+    dispatch({ type: "SET_PROCESSED_DATA", payload: updated });
+  };
 
   const handleBack = () => {
     dispatch({ type: "SET_CURRENT_STEP", payload: 1 });
@@ -28,11 +101,12 @@ export default function ValidationPage() {
     router.push("/refcode");
   };
 
-useEffect(() => {
-  if (state.currentStep !== 2) {
-    dispatch({ type: "SET_CURRENT_STEP", payload: 2 });
-  }
-}, [state.currentStep, dispatch]);
+  useEffect(() => {
+    if (state.currentStep !== 2) {
+      dispatch({ type: "SET_CURRENT_STEP", payload: 2 });
+    }
+    markSmartDuplicateRows(state.processedData); // ส่ง state ล่าสุดเข้าไป
+  }, [state.currentStep, dispatch]);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -54,7 +128,11 @@ useEffect(() => {
             onFilter={setFilterType}
           />
 
-          <ValidationTable searchQuery={searchQuery} filterType={filterType} />
+          <ValidationTable
+            searchQuery={searchQuery}
+            filterType={filterType}
+            markSmartDuplicateRows={markSmartDuplicateRows}
+          />
 
           <div className="flex justify-between">
             <Button variant="outline" onClick={handleBack}>
